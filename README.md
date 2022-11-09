@@ -1,93 +1,64 @@
-# MLJTestIntegration.jl
+# MLJTestInterface.jl
 
-Package for applying integration tests to models implementing the
-[MLJ](https://alan-turing-institute.github.io/MLJ.jl/dev/) model
-interface.
+Package for testing an implementation of the
+[MLJ](https://alan-turing-institute.github.io/MLJ.jl/dev/) model interface.
 
-[![Lifecycle:Experimental](https://img.shields.io/badge/Lifecycle-Experimental-339999)](https://github.com/bcgov/repomountie/blob/master/doc/lifecycle-badges.md) [![Build Status](https://github.com/JuliaAI/MLJTestIntegration.jl/workflows/CI/badge.svg)](https://github.com/JuliaAI/MLJTestIntegration.jl/actions) [![Coverage](https://codecov.io/gh/JuliaAI/MLJTestIntegration.jl/branch/master/graph/badge.svg)](https://codecov.io/github/JuliaAI/MLJTestIntegration.jl?branch=master) 
+[![Lifecycle:Experimental](https://img.shields.io/badge/Lifecycle-Experimental-339999)](https://github.com/bcgov/repomountie/blob/master/doc/lifecycle-badges.md) [![Build Status](https://github.com/JuliaAI/MLJTestInterface.jl/workflows/CI/badge.svg)](https://github.com/JuliaAI/MLJTestInterface.jl/actions) [![Coverage](https://codecov.io/gh/JuliaAI/MLJTestInterface.jl/branch/master/graph/badge.svg)](https://codecov.io/github/JuliaAI/MLJTestInterface.jl?branch=master) 
 
 # Installation
 
 ```julia
 using Pkg
-Pkg.add("MLJTestIntegration")
+Pkg.add("MLJTestInterface")
 ```
 
 # Usage
 
-This package provides a method for testing a collection of `models`
-(types or named tuples with keys `:name` and `:package_name`) using
-the specified training `data`:
+To test that a collection of model types, `models`, satisfy the [MLJ model interface
+requirements](https://alan-turing-institute.github.io/MLJ.jl/dev/adding_models_for_general_use/),
+use the `MLJTestInterface.test` function:
 
 ```julia
-MLJTestIntegration.test(models, data...; mod=Main, level=2, throw=false, verbosity=1) 
+MLJTestInterface.test(models, data...; mod=Main, level=2, throw=false, verbosity=1) 
     -> failures, summary
 ```
 
-For detailed documentation, run `using MLJTestIntegration; @doc MLJTestIntegration.test`.
+Here `data` is training data acceptable to all the specified `models`, as would appear in
+a call `MLJModelInterface.fit(model_instance, verbosity, data...)`.
 
-For convenience, a number of specializations of this method are also provided: 
-
-- `test_single_target_classifiers`
-- `test_single_target_regressors`
-- `test_single_target_count_regressors`
-- `test_continuous_table_transformers`
-
-Query the document strings for details, or see
-[examples/bigtest/notebook.jl](examples/bigtest/notebook.jl).
+For detailed documentation, run `using MLJTestInterface; @doc MLJTestInterface.test`.
 
 
-# Examples
+# Example
 
-## Testing models in a new MLJ model interface implementation
-
-The following tests the model interface implemented by some model type `MyClassifier` for
-multiclass classification, as might appear in tests for a package providing that type:
+The following tests the model interface implemented by the `DecisionTreeClassifier` model
+implemented in the package MLJDecisionTreeInterface.jl.
 
 ```julia
-import MLJTestIntegration
+import MLJDecisionTreeInterface
+import MLJTestInterface
 using Test
-X, y = MLJTestIntegration.make_multiclass()
-failures, summary = MLJTestIntegration.test([MyClassifier, ], X, y, verbosity=1, mod=@__MODULE__)
+X, y = MLJTestInterface.make_multiclass()
+failures, summary = MLJTestInterface.test(
+    [MLJDecisionTreeInterface.DecisionTreeClassifier, ],
+    X, y,
+    verbosity=0, # set to 2 when debugging
+    throw=false, # set to `true` when debugging
+    mod=@__MODULE__,
+)
 @test isempty(failures)
-```
-
-## Testing models after filtering models in the registry
-
-The following applies comprehensive integration tests to all
-regressors provided by the package GLM.jl appearing in the MLJ Model
-Registry. Since GLM.jl models are provided through the interface
-package `MLJGLMInterface`, this must be in the current environment:
-
-```julia
-Pkg.add("MLJGLMInterface")
-import MLJBase, MLJTestIntegration
-using DataFrames # to view summary
-X, y = MLJTestIntegration.MLJ.make_regression();
-regressors = MLJTestIntegration.MLJ.models(matching(X, y)) do m
-    m.package_name == "GLM"
-end
-
-# to test code loading:
-MLJTestIntegration.test(regressors, X, y, verbosity=2, mod=@__MODULE__, level=1)
-
-# comprehensive tests:
-failures, summary =
-    MLJTestIntegration.test(regressors, X, y, verbosity=2, mod=@__MODULE__, level=4)
-
-summary |> DataFrame
 ```
 
 # Datasets
 
-The following commands generate datasets of the form `(X, y)` suitable for integration
+The following commands generate small datasets of the form `(X, y)` suitable for interface
 tests:
 
-- `MLJTestIntegration.make_binary` 
+- `MLJTestInterface.make_binary` 
 
-- `MLJTestIntegration.make_multiclass` 
+- `MLJTestInterface.make_multiclass` 
 
-- `MLJTestIntegration.make_regression` 
+- `MLJTestInterface.make_regression` 
 
-- `MLJTestIntegration.make_count` 
+- `MLJTestInterface.make_count` 
 

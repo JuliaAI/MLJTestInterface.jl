@@ -1,9 +1,11 @@
 using Test
 using Pkg
-using MLJTestIntegration
-using MLJTestIntegration.MLJ
-using MLJTestIntegration.MLJ.MLJModels
-const MTI = MLJTestIntegration
+using MLJTestInterface
+using MLJTestInterface.MLJBase
+using MLJModels
+import MLJDecisionTreeInterface
+
+const MTI = MLJTestInterface
 
 # enable conditional testing of modules by providing test_args
 # e.g. `Pkg.test("MLJBase", test_args=["misc"])`
