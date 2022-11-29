@@ -29,7 +29,7 @@ end
 
 const WARN_FAILURES_ENCOUNTERED =
     "Some errors were encountered. To isolate specific errors you may want "*
-    "test again, specifiying `throw=false` to get a full stack trace. You may also want "*
+    "test again, specifiying `throw=true` to get a full stack trace. You may also want "*
     "limit tests to problem model(s). "
 
 # for updating `failures` and `summary` tables output by `test(...)` below; returns the
