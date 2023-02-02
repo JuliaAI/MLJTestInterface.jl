@@ -33,7 +33,7 @@ expected_report2 = (
             y;
             mod=@__MODULE__,
             level=2,
-            verbosity=0
+            verbosity=0,
         )
     @test isempty(fails)
     @test report[1] == expected_report1
