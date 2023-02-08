@@ -78,6 +78,9 @@ function fitted_machine(model, data...; throw=false, verbosity=1)
         mach = model isa Static ? machine(model) :
                                   machine(model, data...)
         fit!(mach, verbosity=-1)
+        train, _ = MLJBase.partition(1:MLJBase.nrows(first(data)), 0.5)
+        fit!(mach, rows=train, verbosity=-1)
+        fit!(mach, rows=:, verbosity=-1)
         MLJBase.report(mach)
         MLJBase.fitted_params(mach)
         mach
@@ -89,12 +92,17 @@ function operations(fitted_machine, data...; throw=false, verbosity=1)
     attempt(finalize(message, verbosity); throw)  do
         operations = String[]
         methods = MLJBase.implemented_methods(fitted_machine.model)
+        _, test = MLJBase.partition(1:MLJBase.nrows(first(data)), 0.5)
         if :predict in methods
             predict(fitted_machine, first(data))
+            predict(fitted_machine, rows=test)
+            predict(fitted_machine, rows=:)
             push!(operations, "predict")
         end
         if :transform in methods
             W = transform(fitted_machine, first(data))
+            transform(fitted_machine, rows=test)
+            transform(fitted_machine, rows=:)
             push!(operations, "transform")
             if :inverse_transform in methods
                 inverse_transform(fitted_machine, W)
@@ -104,4 +112,3 @@ function operations(fitted_machine, data...; throw=false, verbosity=1)
         join(operations, ", ")
     end
 end
-
