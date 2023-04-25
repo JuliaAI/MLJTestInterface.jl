@@ -79,8 +79,8 @@ function fitted_machine(model, data...; throw=false, verbosity=1)
                                   machine(model, data...)
         fit!(mach, verbosity=-1)
         train, _ = MLJBase.partition(1:MLJBase.nrows(first(data)), 0.5)
-        fit!(mach, rows=train, verbosity=-1)
-        fit!(mach, rows=:, verbosity=-1)
+        model isa Static || fit!(mach, rows=train, verbosity=-1)
+        model isa Static || fit!(mach, rows=:, verbosity=-1)
         MLJBase.report(mach)
         MLJBase.fitted_params(mach)
         mach
@@ -90,19 +90,20 @@ end
 function operations(fitted_machine, data...; throw=false, verbosity=1)
     message = "[:operations] Calling `predict`, `transform` and/or `inverse_transform` "
     attempt(finalize(message, verbosity); throw)  do
+        model = fitted_machine.model
         operations = String[]
         methods = MLJBase.implemented_methods(fitted_machine.model)
         _, test = MLJBase.partition(1:MLJBase.nrows(first(data)), 0.5)
         if :predict in methods
             predict(fitted_machine, first(data))
-            predict(fitted_machine, rows=test)
-            predict(fitted_machine, rows=:)
+            model isa Static || predict(fitted_machine, rows=test)
+            model isa Static || predict(fitted_machine, rows=:)
             push!(operations, "predict")
         end
         if :transform in methods
             W = transform(fitted_machine, first(data))
-            transform(fitted_machine, rows=test)
-            transform(fitted_machine, rows=:)
+            model isa Static || transform(fitted_machine, rows=test)
+            model isa Static || transform(fitted_machine, rows=:)
             push!(operations, "transform")
             if :inverse_transform in methods
                 inverse_transform(fitted_machine, W)
