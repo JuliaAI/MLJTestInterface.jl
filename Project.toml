@@ -1,7 +1,7 @@
 name = "MLJTestInterface"
 uuid = "72560011-54dd-4dc2-94f3-c5de45b75ecd"
 authors = ["Anthony D. Blaom <anthony.blaom@gmail.com>"]
-version = "0.2.1"
+version = "0.2.2"
 
 [deps]
 MLJBase = "a7f614a8-145f-11e9-1d2a-a57a1082229d"
