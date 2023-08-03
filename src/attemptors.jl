@@ -101,7 +101,11 @@ function operations(fitted_machine, data...; throw=false, verbosity=1)
             push!(operations, "predict")
         end
         if :transform in methods
-            W = transform(fitted_machine, first(data))
+            W = if model isa Static
+                transform(fitted_machine, data...)
+            else
+                transform(fitted_machine, first(data))
+            end
             model isa Static || transform(fitted_machine, rows=test)
             model isa Static || transform(fitted_machine, rows=:)
             push!(operations, "transform")
