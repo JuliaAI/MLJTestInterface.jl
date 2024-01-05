@@ -54,11 +54,11 @@ failures, summary = MLJTestInterface.test(
 The following commands generate small datasets of the form `(X, y)` suitable for interface
 tests:
 
-- `MLJTestInterface.make_binary` 
+- `MLJTestInterface.make_binary(; row_table=false)` 
 
-- `MLJTestInterface.make_multiclass` 
+- `MLJTestInterface.make_multiclass(; row_table=false)` ` 
 
-- `MLJTestInterface.make_regression` 
+- `MLJTestInterface.make_regression(; row_table=false)` ` 
 
-- `MLJTestInterface.make_count` 
+- `MLJTestInterface.make_count(; row_table=false)` ` 
 
