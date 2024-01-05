@@ -95,7 +95,7 @@ function operations(fitted_machine, data...; throw=false, verbosity=1)
         methods = MLJBase.implemented_methods(fitted_machine.model)
         if model isa Static && !(:transform in methods)
             push!(methods, :transform)
-        end 
+        end
         _, test = MLJBase.partition(1:MLJBase.nrows(first(data)), 0.5)
         if :predict in methods
             predict(fitted_machine, first(data))
