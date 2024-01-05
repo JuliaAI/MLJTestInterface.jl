@@ -20,6 +20,10 @@ macro conditional_testset(name, expr)
     end)
 end
 
+@conditional_testset "datasets" begin
+    include("datasets.jl")
+end
+
 @conditional_testset "attemptors" begin
     include("attemptors.jl")
 end
