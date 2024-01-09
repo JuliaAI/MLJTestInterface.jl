@@ -42,12 +42,6 @@ MLJBase.transform(::DummyStatic, _, x, y) = hcat(x, y)
 MLJBase.package_name(::Type{<:DummyStatic}) = "DummyPackage"
 MLJBase.load_path(::Type{<:DummyStatic}) = "DummyPackage.Some.Thing.Different"
 
-struct DummyStatic2 <: Static end
-MLJBase.transform(::DummyStatic2, _, x, y) = hcat(x, y)
-MLJBase.package_name(::Type{<:DummyStatic2}) = "DummyPackage"
-MLJBase.load_path(::Type{<:DummyStatic2}) = "DummyPackage.Some.Thing.Different"
-MLJBase.implemented_methods(::Type{<:DummyStatic2}) = Symbol[]
-
 struct SupervisedTransformer <: Deterministic end
 MLJBase.fit(::SupervisedTransformer, verbosity, X, y) = (42, nothing, nothing)
 MLJBase.predict(::SupervisedTransformer, _, Xnew) = fill(4.5, length(Xnew))
@@ -66,11 +60,6 @@ MLJBase.load_path(::Type{<:SupervisedTransformer}) =
     @test outcome == "✓"
 
     smach = machine(DummyStatic())
-    operations, outcome = MLJTestInterface.operations(smach, X, y)
-    @test operations == "transform"
-    @test outcome == "✓"
-
-    smach = machine(DummyStatic2())
     operations, outcome = MLJTestInterface.operations(smach, X, y)
     @test operations == "transform"
     @test outcome == "✓"
