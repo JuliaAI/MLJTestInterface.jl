@@ -133,7 +133,7 @@ function test(model_types, data...; mod=Main, level=2, throw=false, verbosity=1,
 
     if level < 1 || level > 2
         level = level < 1 ? 1 : 2
-        @warn WARN(level)
+        @warn WARN_LEVEL(level)
     end
 
     nmodels = length(model_types)
