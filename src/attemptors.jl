@@ -78,7 +78,7 @@ function fitted_machine(model, data...; throw=false, verbosity=1)
         mach = model isa Static ? machine(model) :
                                   machine(model, data...)
         fit!(mach, verbosity=-1)
-        train, _ = MLJBase.partition(1:MLJBase.nrows(first(data)), 0.5)
+        train = 1:MLJBase.nrows(first(data))
         model isa Static || fit!(mach, rows=train, verbosity=-1)
         model isa Static || fit!(mach, rows=:, verbosity=-1)
         MLJBase.report(mach)
@@ -93,7 +93,7 @@ function operations(fitted_machine, data...; throw=false, verbosity=1)
         model = fitted_machine.model
         operations = String[]
         methods = MLJBase.implemented_methods(fitted_machine.model)
-        _, test = MLJBase.partition(1:MLJBase.nrows(first(data)), 0.5)
+        _, test = MLJBase.partition(1:MLJBase.nrows(first(data)), 0.99)
         if :predict in methods
             predict(fitted_machine, first(data))
             model isa Static || predict(fitted_machine, rows=test)
