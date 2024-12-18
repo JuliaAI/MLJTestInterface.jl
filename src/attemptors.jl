@@ -93,7 +93,7 @@ function operations(fitted_machine, data...; throw=false, verbosity=1)
         model = fitted_machine.model
         operations = String[]
         methods = MLJBase.implemented_methods(fitted_machine.model)
-        _, test = MLJBase.partition(1:MLJBase.nrows(first(data)), 0.99)
+        _, test = MLJBase.partition(1:MLJBase.nrows(first(data)), 0.01)
         if :predict in methods
             predict(fitted_machine, first(data))
             model isa Static || predict(fitted_machine, rows=test)
