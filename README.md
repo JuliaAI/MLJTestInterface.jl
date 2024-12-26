@@ -5,6 +5,8 @@ Package for testing an implementation of the
 
 [![Lifecycle:Experimental](https://img.shields.io/badge/Lifecycle-Experimental-339999)](https://github.com/bcgov/repomountie/blob/master/doc/lifecycle-badges.md) [![Build Status](https://github.com/JuliaAI/MLJTestInterface.jl/workflows/CI/badge.svg)](https://github.com/JuliaAI/MLJTestInterface.jl/actions) [![Coverage](https://codecov.io/gh/JuliaAI/MLJTestInterface.jl/branch/master/graph/badge.svg)](https://codecov.io/github/JuliaAI/MLJTestInterface.jl?branch=master) 
 
+For more extensive testing, see [MLJTestIntegration.jl](https://github.com/JuliaAI/MLJTestIntegration.jl/tree/dev).
+
 # Installation
 
 ```julia
