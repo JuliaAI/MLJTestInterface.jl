@@ -64,10 +64,10 @@ loaded into the module `mod`.
 
 The extent of testing is controlled by `level`:
 
-|`level`          | description                    | tests (full list below) |
-|:----------------|:-------------------------------|:------------------------|
-| 1               | test code loading              | `:model_type`           |
-| 2 (default)     | basic test of model interface  | all four tests          |
+|`level`          | description                    | tests (full list below)  |
+|:----------------|:-------------------------------|:-------------------------|
+| 1               | test code loading              | `:model_type`, `:traits` |
+| 2 (default)     | basic test of model interface  | all five tests           |
 
 For extensive MLJ integration tests, instead use `MLJTestIntegration.test`, from
 MLJTestIntegration.jl.
@@ -122,6 +122,8 @@ $DOC_LIST_OF_TESTS1
 - `:model_type`: Check `load_path` trait is correctly overloaded by attempting to
   re-import the type based on that trait's value.
 
+- `:traits`: Apply smoke tests to model trait values.
+
 $DOC_LIST_OF_TESTS2
 
 See also [`MLJTestInterface.make_binary`](@ref),
@@ -144,16 +146,18 @@ function test(model_types, data...; mod=Main, level=2, throw=false, verbosity=1,
         :name,
         :package_name,
         :model_type,
+        :traits,
         :model_instance,
         :fitted_machine,
         :operations,
-    ), NTuple{6, String}}}(undef, nmodels)
+    ), NTuple{7, String}}}(undef, nmodels)
 
     # summary table row corresponding to all tests skipped:
     row0 = (
         ; name="undefined",
         package_name= "undefined",
         model_type = "-",
+        traits = "-",
         model_instance = "-",
         fitted_machine = "-",
         operations = "-",
@@ -188,6 +192,15 @@ function test(model_types, data...; mod=Main, level=2, throw=false, verbosity=1,
             verbosity,
         )
         row = update!(summary, failures, row, i, :model_type, model_type, outcome)
+        outcome == "×" && continue
+
+        # [traits]:
+        traits, outcome = MLJTestInterface.traits(
+            model_type;
+            throw,
+            verbosity,
+        )
+        row = update!(summary, failures, row, i, :traits, traits, outcome)
         outcome == "×" && continue
 
         level > 1 || continue

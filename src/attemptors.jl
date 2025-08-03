@@ -65,6 +65,51 @@ function model_type(T, mod; throw=false, verbosity=1)
     return model_type, outcome
 end
 
+# helpers:
+ismissing_or_isa(x, T) = ismissing(x) || x isa T
+bad_trait(model_type) = "$model_type has a bad trait declaration.\n"
+
+const err_is_pure_julia(model_type) = ErrorException(
+    bad_trait(model_type)*"`is_pure_julia` must return `true` or `false`. "
+)
+const err_supports_weights(model_type) = ErrorException(
+    bad_trait(model_type)*"`supports_weights` must return `true`, `false` or `missing`. "
+)
+const err_supports_class_weights(model_type) = ErrorException(
+    bad_trait(model_type)*"`supports__class_weights` must return `true`, `false` or `missing`. "
+)
+const err_is_wrapper(model_type) = ErrorException(
+    bad_trait(model_type)*"`is_wrapper` must return `true` or `false`. "
+)
+const err_package_name(model_type) = ErrorException(
+    bad_trait(model_type)*"`package_name` must return a `String`. "
+)
+const err_packge_license(model_type) = ErrorException(
+    bad_trait(model_type)*"`package_license` must return a `String`. "
+)
+const err_iteration_parameter(model_type) = ErrorException(
+    bad_trait(model_type)*"`iteration_parameter` must return a `Symbol` or `nothing`. "
+)
+
+function traits(model_type; throw=false, verbosity=1)
+    message = "[:traits] Apply smoke test to some model traits"
+    attempt(finalize(message, verbosity); throw)  do
+        ismissing_or_isa(MLJBase.is_pure_julia(model_type), Bool) ||
+            throw(err_is_pure_julia(model_type))
+        ismissing_or_isa(MLJBase.supports_weights(model_type), Bool) ||
+            throw(err_supports_(model_type))
+        ismissing_or_isa(MLJBase.supports_class_weights(model_type), Bool) ||
+            throw(err_supports_class_weights(model_type))
+        MLJBase.package_name(model_type) isa String ||
+            throw(err_package_name(model_type))
+        MLJBase.package_license(model_type) isa String ||
+            throw(err_package_license(model_type))
+        MLJBase.iteration_parameter(model_type) isa Union{Nothing,Symbol} ||
+            throw(err_iteration_parameter(model_type))
+        nothing
+    end
+end
+
 function model_instance(model_type; throw=false, verbosity=1)
     message = "[:model_instance] Instantiating default model "
     attempt(finalize(message, verbosity); throw)  do
