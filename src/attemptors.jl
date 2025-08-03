@@ -102,10 +102,10 @@ function operations(fitted_machine, data...; throw=false, verbosity=1)
 
             # check for double wrapped CategoricalValues in predict output for
             # classifiers:
-            if target_scitype(model) <: Finite &&
+            if target_scitype(model) <: AbstractVector{<:Finite} &&
                 model isa Union{Deterministic,Probabilistic}
                 η = model isa Deterministic ? first(yhat) : rand(first(yhat))
-                unwrap(first(y)) isa MLJBase.CategoricalArrays.CategoricalValue &&
+                unwrap(η) isa MLJBase.CategoricalArrays.CategoricalValue &&
                     error("Doubly wrapped CategoricalValue encountered. Check use of "*
                     "CategoricalArrays methods `levels` and `unique`, which changed in "*
                     "version 1.0. ")
