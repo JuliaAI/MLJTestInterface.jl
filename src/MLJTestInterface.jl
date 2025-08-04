@@ -5,6 +5,7 @@ const N_MODELS_FOR_REPEATABILITY_TEST = 20
 using MLJBase
 using Pkg
 using Test
+import MLJBase.CategoricalArrays.unwrap
 
 include("attemptors.jl")
 include("test.jl")

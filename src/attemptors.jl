@@ -140,10 +140,21 @@ function operations(fitted_machine, data...; throw=false, verbosity=1)
         methods = MLJBase.implemented_methods(fitted_machine.model)
         _, test = MLJBase.partition(1:MLJBase.nrows(first(data)), 0.01)
         if :predict in methods
-            predict(fitted_machine, first(data))
+            yhat = predict(fitted_machine, first(data))
             model isa Static || predict(fitted_machine, rows=test)
             model isa Static || predict(fitted_machine, rows=:)
             push!(operations, "predict")
+
+            # check for double wrapped CategoricalValues in predict output for
+            # classifiers:
+            if target_scitype(model) <: AbstractVector{<:Finite} &&
+                model isa Union{Deterministic,Probabilistic}
+                η = model isa Deterministic ? first(yhat) : rand(first(yhat))
+                unwrap(η) isa MLJBase.CategoricalArrays.CategoricalValue &&
+                    error("Doubly wrapped CategoricalValue encountered. Check use of "*
+                    "CategoricalArrays methods `levels` and `unique`, which changed in "*
+                    "version 1.0. ")
+            end
         end
         if :transform in methods
             W = if model isa Static
